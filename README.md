@@ -1,8 +1,6 @@
-ktXML
-=========
+# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.0.2-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg) ](https://bintray.com/musichin/maven/ktXML/_latestVersion)
 
-License
--------
+## License
 
     Copyright (C) 2016 Anton Musichin
 
