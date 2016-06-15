@@ -25,7 +25,7 @@ subprojects {
     apply plugin: "com.jfrog.bintray"
 
     group = 'com.github.musichin.ktxml'
-    version = '0.0.1'
+    version = '0.0.2'
 
     task sourceJar(type: Jar) {
         from sourceSets.main.allSource
@@ -51,7 +51,7 @@ subprojects {
         user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
         key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
         publications = ['mavenJava']
-        //publish = true
+        publish = true
         pkg {
             repo = 'maven'
             name = 'ktXML'
