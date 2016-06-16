@@ -14,6 +14,21 @@ final class Attribute(
     operator fun component2() = name
     operator fun component3() = value
 
+    override fun hashCode(): Int {
+        var result = name.hashCode();
+        result = 31 * result + value.hashCode()
+        return result;
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Attribute) {
+            return name == other.name && value == other.value
+        }
+        return super.equals(other)
+    }
+
+    fun newBuilder() = Builder(namespace, name, value)
+
     open class Builder(
             override var namespace: String? = null,
             override var name: String? = null,
@@ -39,6 +54,4 @@ final class Attribute(
 
         fun build(fallbackNamespace: String? = null) = Attribute(namespace ?: fallbackNamespace, name!!, value!!)
     }
-
-    fun newBuilder() = Builder(namespace, name, value)
 }

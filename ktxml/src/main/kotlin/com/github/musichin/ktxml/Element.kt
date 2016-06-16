@@ -70,6 +70,28 @@ final class Element(
         return (elements.find { it is CDataElement } as? CDataElement)?.data
     }
 
+    val size = elements.size
+
+    operator fun get(i: Int) = elements[i]
+
+    override fun hashCode(): Int {
+        var result = (namespace?.hashCode() ?: 0)
+        result = 31 * result + name.hashCode()
+        result = 31 * result + elements.hashCode()
+        result = 31 * result + attributes.hashCode()
+        return result;
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is Element) {
+            return namespace == other.namespace &&
+                    name == other.name &&
+                    elements == other.elements &&
+                    attributes == other.attributes
+        }
+        return super.equals(other)
+    }
+
     open class Builder constructor(
             override var namespace: String? = null,
             override var name: String? = null,

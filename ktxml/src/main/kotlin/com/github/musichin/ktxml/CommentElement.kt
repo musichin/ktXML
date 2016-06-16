@@ -3,6 +3,20 @@ package com.github.musichin.ktxml
 final class CommentElement(
         val comment: String
 ) : BaseElement() {
+
+    override fun newBuilder() = Builder(comment)
+
+    override fun hashCode(): Int {
+        return comment.hashCode();
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other is CommentElement) {
+            return comment == other.comment
+        }
+        return super.equals(other)
+    }
+
     open class Builder(protected var comment: String? = null) : BaseElement.Builder {
         fun comment(comment: String): Builder {
             this.comment = comment
@@ -13,6 +27,4 @@ final class CommentElement(
             return CommentElement(comment!!)
         }
     }
-
-    override fun newBuilder() = Builder(comment)
 }
