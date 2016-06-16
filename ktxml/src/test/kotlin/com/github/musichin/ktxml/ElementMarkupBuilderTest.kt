@@ -142,7 +142,7 @@ class ElementMarkupBuilderTest {
     @Test fun testUnaryPlusStringOperator() {
         val element = elementOf("root") {
             element("textWrapper") {
-                + "text"
+                +"text"
             }
         }
 
@@ -151,7 +151,7 @@ class ElementMarkupBuilderTest {
 
     @Test fun testUnaryPlusPairOperator() {
         val element = elementOf("root") {
-            + ("myKey"  to "myValue")
+            +("myKey"  to "myValue")
         }
 
         assertThat(element.attribute("myKey")).isEqualTo("myValue")
@@ -167,7 +167,7 @@ class ElementMarkupBuilderTest {
     }
 
     @Test fun testElementBuilderOfWithNamespace() {
-        val builder = elementBuilderOf("myNamespace","root") {
+        val builder = elementBuilderOf("myNamespace", "root") {
             text("innerText")
         }
 
@@ -176,7 +176,7 @@ class ElementMarkupBuilderTest {
     }
 
     @Test fun testElementBuilderOfWithNullNamespace() {
-        val builder = elementBuilderOf(null,"root")
+        val builder = elementBuilderOf(null, "root")
 
         assertThat(builder.build().namespace()).isNull()
         assertThat(builder.build().elements()).isEmpty()

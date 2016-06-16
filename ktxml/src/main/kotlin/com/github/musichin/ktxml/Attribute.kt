@@ -10,9 +10,9 @@ final class Attribute(
             value: String
     ) : this(null, name, value)
 
-    fun component1() = namespace
-    fun component2() = name
-    fun component3() = value
+    operator fun component1() = namespace
+    operator fun component2() = name
+    operator fun component3() = value
 
     open class Builder(
             override var namespace: String? = null,
