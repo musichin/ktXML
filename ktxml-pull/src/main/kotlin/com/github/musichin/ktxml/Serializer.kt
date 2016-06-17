@@ -40,7 +40,7 @@ private fun TextElement.serialize(serializer: XmlSerializer) {
 }
 
 private fun CDataElement.serialize(serializer: XmlSerializer) {
-    serializer.cdsect(data)
+    serializer.cdsect(text)
 }
 
 private fun CommentElement.serialize(serializer: XmlSerializer) {
@@ -50,9 +50,9 @@ private fun CommentElement.serialize(serializer: XmlSerializer) {
 private fun BaseElement.serialize(serializer: XmlSerializer) {
     when (this) {
         is Element -> serialize(serializer)
+        is CDataElement -> serialize(serializer)
         is TextElement -> serialize(serializer)
         is CommentElement -> serialize(serializer)
-        is CDataElement -> serialize(serializer)
         else -> throw UnsupportedOperationException("${javaClass.name} is unsupported")
     }
 }

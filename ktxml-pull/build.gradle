@@ -24,7 +24,7 @@ dependencies {
 publish {
     artifactId = project.name
     uploadName = parent.ext.publish_name
-    autoPublish = false
+    autoPublish = true
     desc = parent.ext.publish_desc
     groupId = parent.ext.publish_groupId
     licences = parent.ext.publish_licences

@@ -7,6 +7,6 @@ class CDataElementTest {
     @Test fun testNewBuilder() {
         val cdataElement = CDataElement("myData").newBuilder().build()
 
-        assertThat(cdataElement.data).isEqualTo("myData")
+        assertThat(cdataElement.text).isEqualTo("myData")
     }
 }

@@ -1,30 +1,23 @@
 package com.github.musichin.ktxml
 
-final class CDataElement(
-        val data: String
-) : BaseElement() {
+open class CDataElement(text: String) : TextElement(text) {
 
     override fun hashCode(): Int {
-        return data.hashCode();
+        return text.hashCode();
     }
 
     override fun equals(other: Any?): Boolean {
         if (other is CDataElement) {
-            return data == other.data
+            return text == other.text
         }
         return super.equals(other)
     }
 
-    override fun newBuilder() = Builder(data)
+    override fun newBuilder() = Builder(text)
 
-    open class Builder(protected var data: String? = null) : BaseElement.Builder {
-        fun data(data: String): Builder {
-            this.data = data
-            return this
-        }
-
-        override fun build(): CDataElement {
-            return CDataElement(data!!)
+    open class Builder(text: String? = null) : TextElement.Builder(text) {
+        override fun build(): TextElement {
+            return CDataElement(text!!)
         }
     }
 }

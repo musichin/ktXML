@@ -1,6 +1,6 @@
 package com.github.musichin.ktxml
 
-final class CommentElement(
+open class CommentElement(
         val comment: String
 ) : BaseElement() {
 
@@ -15,6 +15,10 @@ final class CommentElement(
             return comment == other.comment
         }
         return super.equals(other)
+    }
+
+    override fun toString(): String {
+        return "${javaClass.simpleName}(comment=$comment)"
     }
 
     open class Builder(protected var comment: String? = null) : BaseElement.Builder {

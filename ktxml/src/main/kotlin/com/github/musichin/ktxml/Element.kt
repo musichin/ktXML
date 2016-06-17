@@ -1,6 +1,6 @@
 package com.github.musichin.ktxml
 
-final class Element(
+class Element(
         override val namespace: String? = null,
         override val name: String,
         val elements: List<BaseElement> = listOf(),
@@ -63,11 +63,10 @@ final class Element(
 
     fun comment(): String? {
         return (elements.find { it is CommentElement } as? CommentElement)?.comment
-
     }
 
     fun cdata(): String? {
-        return (elements.find { it is CDataElement } as? CDataElement)?.data
+        return (elements.find { it is CDataElement } as? CDataElement)?.text
     }
 
     val size = elements.size
@@ -90,6 +89,10 @@ final class Element(
                     attributes == other.attributes
         }
         return super.equals(other)
+    }
+
+    override fun toString(): String {
+        return "${javaClass.simpleName}(namespace=$namespace, name=$name, elements=$elements, attributes=$attributes)"
     }
 
     open class Builder constructor(

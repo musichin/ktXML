@@ -42,7 +42,7 @@ class PathTest {
     @Test fun testText() {
         assertThat(element / XText).isNull()
         assertThat(element / "books" / XPaths("book") / XText).hasSize(10).contains("title4")
-        assertThat(element / XPaths("authorImage") / XText).isEmpty()
+        assertThat(element / XPaths("authorImage") / "empty" / XText).isEmpty()
     }
 
     @Test fun testCData() {

@@ -1,6 +1,6 @@
 package com.github.musichin.ktxml
 
-final class TextElement(
+open class TextElement(
         val text: String
 ) : BaseElement() {
 
@@ -15,6 +15,10 @@ final class TextElement(
             return text == other.text
         }
         return super.equals(other)
+    }
+
+    override fun toString(): String {
+        return "${javaClass.simpleName}(text=$text)"
     }
 
     open class Builder(protected var text: String? = null) : BaseElement.Builder {

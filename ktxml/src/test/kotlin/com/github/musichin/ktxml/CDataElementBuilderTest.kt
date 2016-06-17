@@ -5,9 +5,9 @@ import org.junit.Test
 
 class CDataElementBuilderTest {
     @Test fun testBuild() {
-        val cdataElement = CDataElement.Builder().data("myData").build()
+        val cdataElement = CDataElement.Builder().text("myData").build()
 
-        assertThat(cdataElement.data).isEqualTo("myData")
+        assertThat(cdataElement.text).isEqualTo("myData")
     }
 
     @Test(expected = NullPointerException::class) fun testBuildThrowsExceptionWhenDataIsNull() {

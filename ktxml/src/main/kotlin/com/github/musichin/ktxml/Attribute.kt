@@ -27,6 +27,10 @@ final class Attribute(
         return super.equals(other)
     }
 
+    override fun toString(): String {
+        return "${javaClass.simpleName}(name=$name, value=$value)"
+    }
+
     fun newBuilder() = Builder(namespace, name, value)
 
     open class Builder(
