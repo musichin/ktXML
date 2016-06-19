@@ -1,48 +1,161 @@
 package com.github.musichin.ktxml
 
-class Element(
+interface Element : Content, Iterable<Content> {
+    val namespace: String?
+    val name: String
+    val contents: List<Content>
+    val attributes: List<Attribute>
+
+    override fun mutable(): MutableElement
+
+    /**
+     * Returns size of contents in this element
+     */
+    val size: Int
+
+    /**
+     * Returns content at specified position
+     */
+    operator fun get(i: Int): Content
+
+    /**
+     * Returns string of first text content in contents
+     */
+    fun text(): String?
+
+    /**
+     * Returns string of first cdata content in contents
+     */
+    fun cdata(): String?
+
+    /**
+     * Returns string of first comment
+     */
+    fun comment(): String?
+
+    /**
+     * Returns list of elements which match the specified namespace and name.
+     */
+    fun elements(namespace: String? = null, name: String? = null): List<Element>
+
+    /**
+     * Returns first element which match specified namespace and name
+     */
+    fun element(namespace: String? = null, name: String? = null): Element?
+
+    /**
+     * Returns first element which match specified name
+     */
+    fun element(name: String): Element?
+
+    /**
+     * Returns attribute value of the first match
+     */
+    fun attribute(namespace: String? = null, name: String? = null): String?
+
+    companion object {
+        fun of(name: String): Element = ElementContent(name = name)
+        fun of(namespace: String?, name: String): Element = ElementContent(namespace, name)
+        fun of(namespace: String?, name: String, contents: List<Content>, attributes: List<Attribute>): Element
+                = ElementContent(namespace, name, contents, attributes)
+    }
+}
+
+fun elementOf(name: String) = Element.of(name)
+fun elementOf(namespace: String?, name: String) = Element.of(namespace, name)
+fun elementOf(namespace: String?, name: String, contents: List<Content>, attributes: List<Attribute>)
+        = Element.of(namespace, name, contents, attributes)
+
+
+interface MutableElement : Element, MutableContent {
+    override var namespace: String?
+    override var name: String
+    override val contents: MutableList<MutableContent>
+    override val attributes: MutableList<MutableAttribute>
+
+    override fun immutable(): Element
+
+    override fun iterator(): Iterator<MutableContent>
+
+    /**
+     * Adds attribute
+     */
+    fun addAttribute(attribute: Attribute)
+
+    fun addAttribute(namespace: String? = null, name: String, value: String)
+
+    fun addAttribute(name: String, value: String)
+
+    fun addText(text: String)
+
+    fun addCData(text: String)
+
+    fun addComment(comment: String)
+
+    fun addElement(namespace: String? = null, name: String)
+
+    fun addContent(content: Content)
+
+    companion object {
+        fun of(name: String): MutableElement = MutableElementContent(name = name)
+        fun of(namespace: String?, name: String): MutableElement = MutableElementContent(namespace, name)
+        fun of(namespace: String?,
+               name: String,
+               contents: MutableList<MutableContent>,
+               attributes: MutableList<MutableAttribute>): MutableElement
+                = MutableElementContent(namespace, name, contents, attributes)
+    }
+}
+
+fun mutableElementOf(name: String) = MutableElement.of(name)
+fun mutableElementOf(namespace: String?, name: String) = MutableElement.of(namespace, name)
+fun mutableElementOf(namespace: String?,
+                     name: String,
+                     contents: MutableList<MutableContent>,
+                     attributes: MutableList<MutableAttribute>)
+        = MutableElement.of(namespace, name, contents, attributes)
+
+
+open class ElementContent(
         override val namespace: String? = null,
         override val name: String,
-        val elements: List<BaseElement> = listOf(),
-        val attributes: List<Attribute> = listOf()
-) : BaseElement(), IsFullyQualified, Iterable<BaseElement> {
+        override val contents: List<Content> = listOf(),
+        override val attributes: List<Attribute> = listOf()
+) : Element {
     constructor(
             name: String,
-            elements: List<BaseElement> = listOf(),
+            contents: List<Content> = listOf(),
             attributes: List<Attribute> = listOf()
-    ) : this(null, name, elements, attributes)
+    ) : this(null, name, contents, attributes)
 
-    override fun newBuilder(): Builder {
-        return Builder(
-                namespace(),
-                name(),
-                elements.map { it.newBuilder() }.toMutableList(),
-                attributes.map { it.newBuilder() }.toMutableList()
-        )
-    }
+    override fun mutable(): MutableElement = MutableElementContent(
+            namespace,
+            name,
+            contents.map { it.mutable() }.toMutableList(),
+            attributes.map { it.mutable() }.toMutableList())
 
-    override fun iterator() = elements.iterator()
+    override fun iterator() = contents.iterator()
 
     fun name() = name
 
     fun namespace() = namespace
 
-    fun element(namespace: String? = null, name: String? = null): Element? {
-        return elements.find { it is Element && it.matches(namespace, name) } as? Element
+    override fun element(namespace: String?, name: String?): Element? {
+        return contents.find { it is Element && it.matches(namespace, name) } as? Element
     }
 
-    fun element(name: String) = element(null, name)
+    override fun element(name: String) = element(null, name)
 
     fun element() = element(null, null)
 
-    fun elements() = elements
+    fun elements() = contents
 
     fun elements(name: String? = null): List<Element> = elements(null, name)
 
-    fun elements(namespace: String? = null, name: String? = null): List<Element> {
+    override fun elements(namespace: String?, name: String?): List<Element> {
         val filteredElements = mutableListOf<Element>()
 
-        for (element in elements) {
+        for (element in contents) {
             if (element is Element && element.matches(namespace, name)) {
                 filteredElements.add(element)
             }
@@ -53,30 +166,30 @@ class Element(
 
     fun attributes() = attributes
 
-    fun attribute(namespace: String? = null, name: String? = null) = attributes.find(namespace, name)?.value
+    override fun attribute(namespace: String?, name: String?) = attributes.find { it.matches(namespace, name) }?.value
     fun attribute(name: String? = null) = attribute(null, name)
     fun attribute() = attribute(null, null)
 
-    fun text(): String? {
-        return (elements.find { it is TextElement } as? TextElement)?.text
+    override fun text(): String? {
+        return (contents.find { it is Text } as? Text)?.text
     }
 
-    fun comment(): String? {
-        return (elements.find { it is CommentElement } as? CommentElement)?.comment
+    override fun comment(): String? {
+        return (contents.find { it is Comment } as? Comment)?.comment
     }
 
-    fun cdata(): String? {
-        return (elements.find { it is CDataElement } as? CDataElement)?.text
+    override fun cdata(): String? {
+        return (contents.find { it is CData } as? CData)?.text
     }
 
-    val size = elements.size
+    override val size: Int get() = contents.size
 
-    operator fun get(i: Int) = elements[i]
+    override operator fun get(i: Int) = contents[i]
 
     override fun hashCode(): Int {
         var result = (namespace?.hashCode() ?: 0)
         result = 31 * result + name.hashCode()
-        result = 31 * result + elements.hashCode()
+        result = 31 * result + contents.hashCode()
         result = 31 * result + attributes.hashCode()
         return result;
     }
@@ -85,151 +198,150 @@ class Element(
         if (other is Element) {
             return namespace == other.namespace &&
                     name == other.name &&
-                    elements == other.elements &&
+                    contents == other.contents &&
                     attributes == other.attributes
         }
         return super.equals(other)
     }
 
     override fun toString(): String {
-        return "${javaClass.simpleName}(namespace=$namespace, name=$name, elements=$elements, attributes=$attributes)"
-    }
-
-    open class Builder constructor(
-            override var namespace: String? = null,
-            override var name: String? = null,
-            val elements: MutableList<BaseElement.Builder> = mutableListOf(),
-            val attributes: MutableList<Attribute.Builder> = mutableListOf()
-    ) : BaseElement.Builder, IsFullyQualified {
-        constructor() : this(null, null)
-
-        override fun build() = build(null)
-        fun build(fallbackNamespace: String? = null): Element {
-            val finalNamespace = namespace ?: fallbackNamespace
-
-            val mappedElements = elements.map { if (it is Element.Builder) it.build(finalNamespace) else it.build() }
-            val mappedAttributes = attributes.map { it.build(finalNamespace) }
-
-            return Element(finalNamespace, name!!, mappedElements, mappedAttributes)
-        }
-
-        fun name(name: String): Builder {
-            this.name = name
-            return this
-        }
-
-        fun namespace(namespace: String?): Builder {
-            this.namespace = namespace
-            return this
-        }
-
-        fun addAttribute(attribute: Attribute.Builder): Builder {
-            attributes.add(attribute)
-            return this
-        }
-
-        fun addAttribute(attribute: Attribute) = addAttribute(attribute.newBuilder())
-
-        fun addAttribute(namespace: String?, name: String, value: String) = addAttribute(Attribute.Builder(namespace, name, value))
-
-        fun addAttribute(name: String, value: String) = addAttribute(null, name, value)
-
-        fun removeAttribute(attribute: Attribute.Builder): Builder {
-            attributes.remove(attribute)
-            return this
-        }
-
-        fun removeAttribute(name: String) = removeAttribute(null, name)
-        fun removeAttribute(namespace: String?, name: String) = attributes.find(namespace, name)?.let { removeAttribute(it) } ?: this
-
-        fun clearAttributes(): Builder {
-            attributes.clear()
-            return this
-        }
-
-        fun addElement(element: BaseElement.Builder): Builder {
-            elements.add(element)
-            return this
-        }
-
-        fun addElement(element: BaseElement) = addElement(element.newBuilder())
-
-        fun addElement(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}): Builder {
-            return addElement(elementBuilderOf(namespace, name, init))
-        }
-
-        fun addElement(namespace: String? = null, name: String) = addElement(namespace, name, {})
-
-        fun addElement(name: String) = addElement(null, name, {})
-
-        fun addElement(name: String, init: MarkupBuilder.() -> Unit = {}) = addElement(null, name, init)
-
-        fun addText(text: String) = addElement(TextElement.Builder(text))
-
-        fun addComment(comment: String) = addElement(CommentElement.Builder(comment))
-
-        fun addCData(data: String) = addElement(CDataElement.Builder(data))
-
-
-        fun removeElement(element: BaseElement.Builder): Builder {
-            elements.remove(element)
-            return this
-        }
-
-        fun removeElement(element: BaseElement) = removeElement(element.newBuilder())
-
-        fun clearElements(): Builder {
-            elements.clear()
-            return this
-        }
-
-        operator fun String.unaryPlus() = addText(this)
-    }
-
-    open class MarkupBuilder(
-            private val builder: Builder,
-            init: MarkupBuilder.() -> Unit = {}
-    ) : BaseElement.MarkupBuilder {
-        constructor(name: String, init: MarkupBuilder.() -> Unit = {}) : this(null, name, init)
-
-        constructor(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) : this(Builder(namespace, name), init)
-
-        init {
-            init()
-        }
-
-        override fun builder() = builder
-
-        override fun build() = builder().build()
-
-        fun attribute(attribute: Attribute.Builder) = builder.addAttribute(attribute)
-        fun attribute(attribute: Attribute) = builder.addAttribute(attribute)
-        fun attribute(namespace: String?, name: String, value: String) = attribute(Attribute.Builder(namespace, name, value))
-        fun attribute(name: String, value: String) = attribute(null, name, value)
-
-        fun element(element: BaseElement.Builder) = builder.addElement(element)
-        fun element(element: BaseElement) = builder.addElement(element)
-        fun element(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) = element(elementBuilderOf(namespace, name, init))
-        fun element(name: String, init: MarkupBuilder.() -> Unit = {}) = element(null, name, init)
-
-        fun text(text: String) = builder.addText(text)
-
-        fun comment(comment: String) = builder.addComment(comment)
-
-        fun cdata(data: String) = builder.addCData(data)
-
-        operator fun String.unaryPlus() = text(this)
-        operator fun Pair<String, String>.unaryPlus() = attribute(first, second)
+        return "${javaClass.simpleName}(namespace=$namespace, name=$name, contents=$contents, attributes=$attributes)"
     }
 }
 
-internal fun IsFullyQualified.matches(namespace: String?, name: String?) = (name == null || this.name == name) && (namespace == null || this.namespace == namespace)
+open class MutableElementContent constructor(
+        override var namespace: String? = null,
+        override var name: String,
+        override val contents: MutableList<MutableContent> = mutableListOf(),
+        override val attributes: MutableList<MutableAttribute> = mutableListOf()
+) : ElementContent(namespace, name, contents, attributes), MutableElement {
+    override fun immutable(): Element = ElementContent(
+            namespace,
+            name,
+            contents.map { it.immutable() }.toList(),
+            attributes.map { it.immutable() }.toList())
 
-internal fun <T : IsFullyQualified> List<T>.find(namespace: String? = null, name: String? = null) = find { it.matches(namespace, name) }
+    override fun mutable(): MutableElement = this
 
-fun elementOf(name: String, init: Element.MarkupBuilder.() -> Unit = {}) = elementOf(null, name, init)
-fun elementOf(namespace: String? = null, name: String, init: Element.MarkupBuilder.() -> Unit = {}) = elementBuilderOf(namespace, name, init).build()
+    override fun iterator() = contents.iterator()
 
-fun elementBuilderOf(name: String, init: Element.MarkupBuilder.() -> Unit = {}) = elementBuilderOf(null, name, init)
-fun elementBuilderOf(namespace: String?, name: String, init: Element.MarkupBuilder.() -> Unit = {}) = Element.MarkupBuilder(namespace, name, init).builder()
+    fun name(name: String) {
+        this.name = name
+    }
 
+    fun namespace(namespace: String?) {
+        this.namespace = namespace
+    }
+
+    override fun addAttribute(attribute: Attribute) {
+        attributes.add(attribute.mutable())
+    }
+
+    override fun addAttribute(namespace: String?, name: String, value: String) = addAttribute(mutableAttributeOf(namespace, name, value))
+
+    override fun addAttribute(name: String, value: String) = addAttribute(null, name, value)
+
+    override fun addContent(content: Content) {
+        contents.add(content.mutable())
+    }
+
+    fun addElement(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) {
+        addContent(mutableElementOf(namespace, name, init))
+    }
+
+    override fun addElement(namespace: String?, name: String) = addElement(namespace, name, {})
+
+    fun addElement(name: String) = addElement(null, name, {})
+
+    fun addElement(name: String, init: MarkupBuilder.() -> Unit = {}) = addElement(null, name, init)
+
+    override fun addText(text: String) = addContent(mutableTextOf(text))
+
+    override fun addComment(comment: String) = addContent(mutableCommentOf(comment))
+
+    override fun addCData(text: String) = addContent(mutableCDataOf(text))
+
+    fun remove(attribute: Attribute) {
+        attributes.remove(attribute.mutable())
+    }
+
+    fun remove(element: Content) {
+        contents.remove(element.mutable())
+    }
+
+    fun clearAttributes() {
+        attributes.clear()
+    }
+
+    fun clearContent() {
+        contents.clear()
+    }
+
+    fun clear() {
+        clearAttributes()
+        clearContent()
+    }
+
+    operator fun String.unaryPlus() = addText(this)
+}
+
+open class MarkupBuilder(
+        internal val element: MutableElement,
+        init: MarkupBuilder.() -> Unit = {}
+) {
+    constructor(name: String, init: MarkupBuilder.() -> Unit = {}) : this(null, name, init)
+
+    constructor(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) : this(mutableElementOf(namespace, name), init)
+
+    init {
+        init()
+    }
+
+    internal fun setNamespace(attribute: Attribute): Attribute {
+        val result = attribute.mutable()
+        result.namespace = namespace(result.namespace)
+        return result
+    }
+
+    internal fun setNamespace(content: Content): Content {
+        if (content is Element) {
+            val result = content.mutable()
+            result.namespace = namespace(result.namespace)
+            return result
+        }
+        return content
+    }
+
+    internal fun namespace(other: String?): String? {
+        val namespace = element.namespace ?: return other
+        if (other == null) return namespace
+        return other
+    }
+
+    fun attribute(attribute: Attribute) = element.addAttribute(setNamespace(attribute))
+    fun attribute(namespace: String? = null, name: String, value: String) = attribute(mutableAttributeOf(namespace, name, value))
+    fun attribute(name: String, value: String) = attribute(null, name, value)
+
+    fun content(content: Content) = element.addContent(setNamespace(content))
+    fun element(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) = content(mutableElementOf(namespace, name, init))
+    fun element(name: String, init: MarkupBuilder.() -> Unit = {}) = element(null, name, init)
+
+    fun text(text: String) = element.addText(text)
+
+    fun comment(comment: String) = element.addComment(comment)
+
+    fun cdata(data: String) = element.addCData(data)
+
+    operator fun String.unaryPlus() = text(this)
+    operator fun Pair<String, String>.unaryPlus() = attribute(first, second)
+}
+
+
+fun elementOf(name: String, init: MarkupBuilder.() -> Unit = {}) = elementOf(null, name, init)
+fun elementOf(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) = mutableElementOf(namespace, name, init).immutable()
+
+fun mutableElementOf(name: String, init: MarkupBuilder.() -> Unit = {}) = mutableElementOf(null, name, init)
+fun mutableElementOf(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) = MarkupBuilder(namespace, name, init).element
+
+internal fun Element.matches(namespace: String?, name: String?) = (name == null || this.name == name) && (namespace == null || this.namespace == namespace)
+internal fun Attribute.matches(namespace: String?, name: String?) = (name == null || this.name == name) && (namespace == null || this.namespace == namespace)

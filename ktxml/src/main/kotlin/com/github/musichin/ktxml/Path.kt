@@ -13,9 +13,9 @@ object XName
 
 object XNamespace
 
-class ElementWrapper(val value: Element? = null) {
-    operator fun div(x: XPath) = value?.element(x) ?: ElementWrapper()
-    operator fun div(x: XPaths) = value?.elements(x) ?: ElementListWrapper()
+class ElementWrapper<T : Element>(val value: T? = null) {
+    operator fun div(x: XPath) = value?.element(x) ?: ElementWrapper<T>()
+    operator fun div(x: XPaths) = value?.elements(x) ?: ElementListWrapper<T>()
     operator fun div(name: String) = div(XPath(name))
 
     operator fun div(x: XElement) = value?.let { it / x }
@@ -28,7 +28,7 @@ class ElementWrapper(val value: Element? = null) {
     operator fun div(x: XAttribute) = value?.let { it / x }
 }
 
-class ElementListWrapper(val value: List<Element> = listOf()) {
+class ElementListWrapper<T : Element>(val value: List<T> = listOf()) {
     operator fun div(x: XPaths) = ElementListWrapper(value.mapNotNull { it.elements(x).value }.accumulate())
     operator fun div(x: XPath) = ElementListWrapper(value.mapNotNull { it.element(x).value })
     operator fun div(name: String) = div(XPath(name))
@@ -57,18 +57,18 @@ class XPaths(val namespace: String? = null, val name: String? = null) {
     operator fun get(index: Int) = XPath(namespace, name, index)
 }
 
-operator fun Element.div(x: XPath) = element(x)
-operator fun Element.div(name: String) = div(XPath(null, name))
-operator fun Element.div(x: XPaths) = elements(x)
-operator fun Element.div(x: XAttribute) = attribute(x)
+operator fun <T : Element> T.div(x: XPath) = element(x)
+operator fun <T : Element> T.div(name: String) = div(XPath(null, name))
+operator fun <T : Element> T.div(x: XPaths) = elements(x)
+operator fun <T : Element> T.div(x: XAttribute) = attribute(x)
 
 
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XElement) = this
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XText) = text()
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XCData) = cdata()
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XComment) = comment()
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XName) = name()
-operator fun Element.div(@Suppress("UNUSED_PARAMETER") x: XNamespace) = namespace()
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XElement) = this
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XText) = text()
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XCData) = cdata()
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XComment) = comment()
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XName) = name
+operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XNamespace) = namespace
 
 private fun Element.element(x: XPath) = ElementWrapper(if (x.index != null) elements(x.namespace, x.name).getOrNull(x.index) else element(x.namespace, x.name))
 private fun List<Element>.getOrNull(index: Int): Element? = getOrElse(index, { null })

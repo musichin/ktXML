@@ -5,13 +5,13 @@ import org.xmlpull.v1.XmlSerializer
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
-fun BaseElement.serialize(): String {
+fun Content.serialize(): String {
     val os = ByteArrayOutputStream()
     serialize(os)
     return os.toString()
 }
 
-fun BaseElement.serialize(output: OutputStream) {
+fun Content.serialize(output: OutputStream) {
     val serializer = createSerializer(output)
 
     serializer.startDocument(null, null)
@@ -28,31 +28,31 @@ private fun Element.serialize(serializer: XmlSerializer) {
         serializer.attribute(namespace, key, value)
     }
 
-    for (element in elements) {
+    for (element in contents) {
         element.serialize(serializer)
     }
 
     serializer.endTag(namespace, name)
 }
 
-private fun TextElement.serialize(serializer: XmlSerializer) {
+private fun Text.serialize(serializer: XmlSerializer) {
     serializer.text(text)
 }
 
-private fun CDataElement.serialize(serializer: XmlSerializer) {
+private fun CData.serialize(serializer: XmlSerializer) {
     serializer.cdsect(text)
 }
 
-private fun CommentElement.serialize(serializer: XmlSerializer) {
+private fun Comment.serialize(serializer: XmlSerializer) {
     serializer.comment(comment)
 }
 
-private fun BaseElement.serialize(serializer: XmlSerializer) {
+private fun Content.serialize(serializer: XmlSerializer) {
     when (this) {
         is Element -> serialize(serializer)
-        is CDataElement -> serialize(serializer)
-        is TextElement -> serialize(serializer)
-        is CommentElement -> serialize(serializer)
+        is CData -> serialize(serializer)
+        is Text -> serialize(serializer)
+        is Comment -> serialize(serializer)
         else -> throw UnsupportedOperationException("${javaClass.name} is unsupported")
     }
 }
