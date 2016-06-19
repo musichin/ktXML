@@ -19,6 +19,14 @@ dependencies {
     testCompile 'org.easytesting:fest-assert-core:2.0M10'
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
 publish {
     artifactId = project.name
     uploadName = parent.ext.publish_name
