@@ -39,6 +39,11 @@ interface Element : Content, Iterable<Content> {
     fun elements(namespace: String? = null, name: String? = null): List<Element>
 
     /**
+     * Returns list of elements which match the specified name.
+     */
+    fun elements(name: String? = null): List<Element>
+
+    /**
      * Returns first element which match specified namespace and name
      */
     fun element(namespace: String? = null, name: String? = null): Element?
@@ -52,6 +57,11 @@ interface Element : Content, Iterable<Content> {
      * Returns attribute value of the first match
      */
     fun attribute(namespace: String? = null, name: String? = null): String?
+
+    /**
+     * Returns attribute value of the first match
+     */
+    fun attribute(name: String? = null): String?
 
     companion object {
         fun of(name: String): Element = ElementContent(name = name)
@@ -76,6 +86,16 @@ interface MutableElement : Element, MutableContent {
     override fun immutable(): Element
 
     override fun iterator(): Iterator<MutableContent>
+
+    override fun get(i: Int): MutableContent
+
+    override fun elements(namespace: String?, name: String?): List<MutableElement>
+
+    override fun elements(name: String?): List<MutableElement>
+
+    override fun element(namespace: String?, name: String?): MutableElement?
+
+    override fun element(name: String): MutableElement?
 
     /**
      * Adds attribute
@@ -140,9 +160,7 @@ open class ElementContent(
 
     fun namespace() = namespace
 
-    override fun element(namespace: String?, name: String?): Element? {
-        return contents.find { it is Element && it.matches(namespace, name) } as? Element
-    }
+    override fun element(namespace: String?, name: String?): Element? = contents.element(namespace, name)
 
     override fun element(name: String) = element(null, name)
 
@@ -150,24 +168,14 @@ open class ElementContent(
 
     fun elements() = contents
 
-    fun elements(name: String? = null): List<Element> = elements(null, name)
+    override fun elements(name: String?): List<Element> = elements(null, name)
 
-    override fun elements(namespace: String?, name: String?): List<Element> {
-        val filteredElements = mutableListOf<Element>()
-
-        for (element in contents) {
-            if (element is Element && element.matches(namespace, name)) {
-                filteredElements.add(element)
-            }
-        }
-
-        return filteredElements
-    }
+    override fun elements(namespace: String?, name: String?): List<Element> = contents.elements(namespace, name)
 
     fun attributes() = attributes
 
     override fun attribute(namespace: String?, name: String?) = attributes.find { it.matches(namespace, name) }?.value
-    fun attribute(name: String? = null) = attribute(null, name)
+    override fun attribute(name: String?) = attribute(null, name)
     fun attribute() = attribute(null, null)
 
     override fun text(): String? {
@@ -224,6 +232,16 @@ open class MutableElementContent constructor(
     override fun mutable(): MutableElement = this
 
     override fun iterator() = contents.iterator()
+
+    override fun get(i: Int) = contents[i]
+
+    override fun elements(namespace: String?, name: String?): List<MutableElement> = contents.elements(namespace, name)
+
+    override fun elements(name: String?) = elements(null, name)
+
+    override fun element(namespace: String?, name: String?): MutableElement? = contents.element(namespace, name)
+
+    override fun element(name: String): MutableElement? = element(null, name)
 
     fun name(name: String) {
         this.name = name
@@ -284,6 +302,12 @@ open class MutableElementContent constructor(
 
     operator fun String.unaryPlus() = addText(this)
 }
+
+@Suppress("UNCHECKED_CAST")
+internal fun <T:Element> List<Content>.elements(namespace: String?, name: String?) = filter { it is Element && it.matches(namespace, name) } as List<T>
+@Suppress("UNCHECKED_CAST")
+internal fun <T:Element> List<Content>.element(namespace: String?, name: String?) = find { it is Element && it.matches(namespace, name) } as? T
+
 
 open class MarkupBuilder(
         internal val element: MutableElement,

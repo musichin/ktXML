@@ -2,13 +2,13 @@ package com.github.musichin.ktxml
 
 import org.fest.assertions.api.Assertions.assertThat
 import org.junit.Test
-/*
-class ElementMarkupBuilderTest {
+
+class MarkupBuilderTest {
     @Test fun testEmptyElement() {
         val element = elementOf("myNamespace", "myName")
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
-        assertThat(element.name()).isEqualTo("myName")
+        assertThat(element.namespace).isEqualTo("myNamespace")
+        assertThat(element.name).isEqualTo("myName")
     }
 
     @Test fun testEmptyElementWithAttribute() {
@@ -22,8 +22,8 @@ class ElementMarkupBuilderTest {
     @Test fun testEmptyElementWithoutNamespace() {
         val element = elementOf("myName")
 
-        assertThat(element.namespace()).isNull()
-        assertThat(element.name()).isEqualTo("myName")
+        assertThat(element.namespace).isNull()
+        assertThat(element.name).isEqualTo("myName")
     }
 
     @Test fun testElementWithText() {
@@ -56,14 +56,14 @@ class ElementMarkupBuilderTest {
         }
 
         val element = elementOf("myNamespace", "myName") {
-            element(nested)
+            content(nested)
         }
 
         assertThat(element.element("myNamespace", "nested")?.text()).isEqualTo("myText")
     }
 
     @Test fun testElementWithInstantiatedAttribute() {
-        val attr = Attribute("key", "value")
+        val attr = attributeOf("key", "value")
 
         val element = elementOf("myNamespace", "myName") {
             attribute(attr)
@@ -78,8 +78,8 @@ class ElementMarkupBuilderTest {
             }
         }
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
-        assertThat(element.element("nested")?.namespace()).isEqualTo("myNamespace")
+        assertThat(element.namespace).isEqualTo("myNamespace")
+        assertThat(element.element("nested")?.namespace).isEqualTo("myNamespace")
     }
 
     @Test fun testNestedElementsHaveDifferentNamespacesIfSpecified() {
@@ -88,8 +88,8 @@ class ElementMarkupBuilderTest {
             }
         }
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
-        assertThat(element.element("nested")?.namespace()).isEqualTo("myNestedNamespace")
+        assertThat(element.namespace).isEqualTo("myNamespace")
+        assertThat(element.element("nested")?.namespace).isEqualTo("myNestedNamespace")
     }
 
     @Test fun testAttributesHaveSameNamespaceAsFallback() {
@@ -97,7 +97,7 @@ class ElementMarkupBuilderTest {
             attribute("myKey", "myValue")
         }
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
+        assertThat(element.namespace).isEqualTo("myNamespace")
         assertThat(element.attribute("myKey")).isEqualTo("myValue")
         assertThat(element.attribute("myNamespace", "myKey")).isEqualTo("myValue")
         assertThat(element.attribute("wrongNamespace", "myKey")).isNull()
@@ -108,7 +108,7 @@ class ElementMarkupBuilderTest {
             attribute("myNestedNamespace", "myKey", "myValue")
         }
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
+        assertThat(element.namespace).isEqualTo("myNamespace")
         assertThat(element.attribute("myKey")).isEqualTo("myValue")
         assertThat(element.attribute("myNestedNamespace", "myKey")).isEqualTo("myValue")
         assertThat(element.attribute("myNamespace", "myKey")).isNull()
@@ -122,8 +122,8 @@ class ElementMarkupBuilderTest {
             }
         }
 
-        assertThat(element.namespace()).isEqualTo("myNamespace")
-        assertThat(element.name()).isEqualTo("myName")
+        assertThat(element.namespace).isEqualTo("myNamespace")
+        assertThat(element.name).isEqualTo("myName")
         assertThat(element.element("nested")?.text()).isEqualTo("myText")
         assertThat(element.element("myNamespace", "nested")?.text()).isEqualTo("myText")
     }
@@ -158,38 +158,37 @@ class ElementMarkupBuilderTest {
     }
 
     @Test fun testElementBuilderOfWithoutNamespace() {
-        val builder = elementBuilderOf("root") {
+        val builder = mutableElementOf("root") {
             text("innerText")
         }
 
-        assertThat(builder.build().text()).isEqualTo("innerText")
-
+        assertThat(builder.immutable().text()).isEqualTo("innerText")
     }
 
     @Test fun testElementBuilderOfWithNamespace() {
-        val builder = elementBuilderOf("myNamespace", "root") {
+        val builder = mutableElementOf("myNamespace", "root") {
             text("innerText")
         }
 
-        assertThat(builder.build().text()).isEqualTo("innerText")
-        assertThat(builder.build().namespace()).isEqualTo("myNamespace")
+        assertThat(builder.immutable().text()).isEqualTo("innerText")
+        assertThat(builder.immutable().namespace).isEqualTo("myNamespace")
     }
 
     @Test fun testElementBuilderOfWithNullNamespace() {
-        val builder = elementBuilderOf(null, "root")
+        val builder = mutableElementOf(null, "root")
 
-        assertThat(builder.build().namespace()).isNull()
-        assertThat(builder.build().elements()).isEmpty()
+        assertThat(builder.immutable().namespace).isNull()
+        assertThat(builder.immutable().elements()).isEmpty()
     }
 
     @Test fun testMarkupBuilderConstructor() {
-        val builder = Element.MarkupBuilder("root") {
+        val builder = MarkupBuilder("root") {
             element("nested") {
                 text("innerText")
             }
         }
 
-        assertThat(builder.build().namespace()).isNull()
-        assertThat(builder.build().element("nested")?.text()).isEqualTo("innerText")
+        assertThat(builder.immutable().namespace).isNull()
+        assertThat(builder.immutable().element("nested")?.text()).isEqualTo("innerText")
     }
-}*/
+}

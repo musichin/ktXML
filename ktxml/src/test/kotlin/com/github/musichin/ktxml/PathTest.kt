@@ -122,4 +122,9 @@ class PathTest {
         assertThat(element / XPaths("author-namespace", "books")[0] / XPaths("author-namespace", "book") / XText).hasSize(10)
         assertThat(element / XPaths("author-namespace", "books") / XPaths("author-namespace", "book")[3] / XText).containsExactly("title3")
     }
+
+    @Test fun test() {
+        val e = element.mutable() / "" / XElement
+        e?.namespace = ""
+    }
 }

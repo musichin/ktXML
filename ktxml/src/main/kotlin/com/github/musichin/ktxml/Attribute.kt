@@ -41,9 +41,9 @@ fun mutableAttributeOf(namespace: String? = null, name: String, value: String) =
 
 
 open class AttributeContent(
-        override var namespace: String?,
-        override var name: String,
-        override var value: String
+        override val namespace: String?,
+        override val name: String,
+        override val value: String
 ) : Attribute {
     override fun mutable(): MutableAttribute = MutableAttributeContent(namespace, name, value)
 
