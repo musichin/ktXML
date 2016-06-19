@@ -288,7 +288,11 @@ open class MutableElementContent constructor(
 open class MarkupBuilder(
         internal val element: MutableElement,
         init: MarkupBuilder.() -> Unit = {}
-) {
+) : Content, MutableContent {
+    override fun mutable(): MutableElement = setNamespace(element)
+
+    override fun immutable(): Element = mutable().immutable()
+
     constructor(name: String, init: MarkupBuilder.() -> Unit = {}) : this(null, name, init)
 
     constructor(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) : this(mutableElementOf(namespace, name), init)
@@ -303,11 +307,15 @@ open class MarkupBuilder(
         return result
     }
 
-    internal fun setNamespace(content: Content): Content {
+    internal fun <T : Content> setNamespace(content: T): T {
         if (content is Element) {
             val result = content.mutable()
             result.namespace = namespace(result.namespace)
-            return result
+            content.contents.forEach { setNamespace(it) }
+            content.attributes.forEach { setNamespace(it) }
+
+            @Suppress("UNCHECKED_CAST")
+            return result as T
         }
         return content
     }
@@ -318,11 +326,11 @@ open class MarkupBuilder(
         return other
     }
 
-    fun attribute(attribute: Attribute) = element.addAttribute(setNamespace(attribute))
+    fun attribute(attribute: Attribute) = element.addAttribute(attribute)
     fun attribute(namespace: String? = null, name: String, value: String) = attribute(mutableAttributeOf(namespace, name, value))
     fun attribute(name: String, value: String) = attribute(null, name, value)
 
-    fun content(content: Content) = element.addContent(setNamespace(content))
+    fun content(content: Content) = element.addContent(content)
     fun element(namespace: String?, name: String, init: MarkupBuilder.() -> Unit = {}) = content(mutableElementOf(namespace, name, init))
     fun element(name: String, init: MarkupBuilder.() -> Unit = {}) = element(null, name, init)
 
@@ -334,6 +342,8 @@ open class MarkupBuilder(
 
     operator fun String.unaryPlus() = text(this)
     operator fun Pair<String, String>.unaryPlus() = attribute(first, second)
+
+
 }
 
 
@@ -341,7 +351,7 @@ fun elementOf(name: String, init: MarkupBuilder.() -> Unit = {}) = elementOf(nul
 fun elementOf(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) = mutableElementOf(namespace, name, init).immutable()
 
 fun mutableElementOf(name: String, init: MarkupBuilder.() -> Unit = {}) = mutableElementOf(null, name, init)
-fun mutableElementOf(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) = MarkupBuilder(namespace, name, init).element
+fun mutableElementOf(namespace: String? = null, name: String, init: MarkupBuilder.() -> Unit = {}) = MarkupBuilder(namespace, name, init).mutable()
 
 internal fun Element.matches(namespace: String?, name: String?) = (name == null || this.name == name) && (namespace == null || this.namespace == namespace)
 internal fun Attribute.matches(namespace: String?, name: String?) = (name == null || this.name == name) && (namespace == null || this.namespace == namespace)
