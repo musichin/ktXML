@@ -4,10 +4,10 @@ import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.InputStream
 
-fun String.deserialize() = byteInputStream().deserialize()
+fun String.deserialize(parserFactory: XmlPullParserFactory? = null) = byteInputStream().deserialize(parserFactory)
 
-fun InputStream.deserialize(): Element {
-    val parser = this.xmlPullParser()
+fun InputStream.deserialize(parserFactory: XmlPullParserFactory? = null): Element {
+    val parser = xmlPullParser(parserFactory)
 
     parser.require(XmlPullParser.START_DOCUMENT, null, null)
     parser.next
@@ -21,10 +21,10 @@ fun InputStream.deserialize(): Element {
     return element.mutable()
 }
 
-private fun InputStream.xmlPullParser(): XmlPullParser {
-    val parserFactory = XmlPullParserFactory.newInstance()
-    parserFactory.isNamespaceAware = true
-    val parser = parserFactory.newPullParser()
+private fun InputStream.xmlPullParser(parserFactory: XmlPullParserFactory? = null): XmlPullParser {
+    val factory = parserFactory ?: XmlPullParserFactory.newInstance()
+    factory.isNamespaceAware = true
+    val parser = factory.newPullParser()
     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true)
     parser.setInput(this, null)
     return parser
@@ -69,8 +69,8 @@ private fun XmlPullParser.readText(): String {
 
     var value = ""
     do {
-        value = text
-    } while(next == XmlPullParser.TEXT)
+        value += text
+    } while (next == XmlPullParser.TEXT)
 
     return value
 }

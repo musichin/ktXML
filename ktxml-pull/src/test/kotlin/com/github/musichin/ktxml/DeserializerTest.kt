@@ -10,23 +10,20 @@ class DeserializerTest {
         "".deserialize()
     }
 
-    @Test
-    fun testEmptyTag() {
+    @Test fun testEmptyTag() {
         val element = "<book></book>".deserialize()
 
         assertThat(element.name).isEqualTo("book")
     }
 
-    @Test
-    fun testTagWithText() {
+    @Test fun testTagWithText() {
         val element = "<book>The History of this Library</book>".deserialize()
 
         assertThat(element.name).isEqualTo("book")
         assertThat(element.text()).isEqualTo("The History of this Library")
     }
 
-    @Test
-    fun testTagWithTextAndElement() {
+    @Test fun testTagWithTextAndElement() {
         val element = "<book>The History of <b>this</b> Library</book>".deserialize()
 
         assertThat(element.name).isEqualTo("book")
@@ -37,16 +34,14 @@ class DeserializerTest {
         assertThat(element[2]).isInstanceOf(Text::class.java)
     }
 
-    @Test
-    fun testTagWithNamespace() {
+    @Test fun testTagWithNamespace() {
         val element = "<book xmlns=\"my namespace\">My Book</book>".deserialize()
 
         assertThat(element.name).isEqualTo("book")
         assertThat(element.namespace).isEqualTo("my namespace")
     }
 
-    @Test
-    fun testTagAttributes() {
+    @Test fun testTagAttributes() {
         val element = "<book myAttribute=\"3\">My Book</book>".deserialize()
 
         assertThat(element.attributes).hasSize(1).contains(attributeOf("myAttribute", "3"))

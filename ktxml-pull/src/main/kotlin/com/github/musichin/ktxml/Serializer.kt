@@ -5,20 +5,27 @@ import org.xmlpull.v1.XmlSerializer
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 
-fun Content.serialize(): String {
-    val os = ByteArrayOutputStream()
-    serialize(os)
-    return os.toString()
+fun Element.serialize(): String {
+    val output = ByteArrayOutputStream()
+    serialize(output)
+    return output.toString()
 }
 
-fun Content.serialize(output: OutputStream) {
-    val serializer = createSerializer(output)
+fun Element.serialize(output: OutputStream) {
+    val serializer = output.createSerializer()
 
     serializer.startDocument(null, null)
     serialize(serializer)
     serializer.endDocument()
 
     output.close()
+}
+
+private fun OutputStream.createSerializer(parserFactory: XmlPullParserFactory? = null): XmlSerializer {
+    val factory = parserFactory ?: XmlPullParserFactory.newInstance()
+    val serializer = factory.newSerializer();
+    serializer.setOutput(this, null);
+    return serializer
 }
 
 private fun Element.serialize(serializer: XmlSerializer) {
@@ -55,11 +62,4 @@ private fun Content.serialize(serializer: XmlSerializer) {
         is Comment -> serialize(serializer)
         else -> throw UnsupportedOperationException("${javaClass.name} is unsupported")
     }
-}
-
-private fun createSerializer(output: OutputStream): XmlSerializer {
-    val pullParserFactory = XmlPullParserFactory.newInstance()
-    val serializer = pullParserFactory.newSerializer();
-    serializer.setOutput(output, null);
-    return serializer
 }
