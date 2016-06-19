@@ -1,5 +1,4 @@
-# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.0.2-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML)
- [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg)](https://bintray.com/musichin/maven/ktXML/_latestVersion)
+# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.0.2-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML) [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg)](https://bintray.com/musichin/maven/ktXML/_latestVersion)
 
 ## License
 
