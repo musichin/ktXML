@@ -11,6 +11,7 @@ interface Text : Content {
 }
 
 fun textOf(text: String) = Text.of(text)
+fun String.toText() = textOf(this)
 
 interface MutableText : Text, MutableContent {
     override var text: String;
@@ -25,6 +26,7 @@ interface MutableText : Text, MutableContent {
 }
 
 fun mutableTextOf(text: String) = MutableText.of(text)
+fun String.toMutableText() = mutableTextOf(this)
 
 open class TextContent(
         override val text: String

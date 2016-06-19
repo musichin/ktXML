@@ -11,6 +11,7 @@ interface Comment : Content {
 }
 
 fun commentOf(comment: String): Comment = CommentContent(comment)
+fun String.toComment() = commentOf(this)
 
 
 interface MutableComment : Comment, MutableContent {
@@ -24,6 +25,7 @@ interface MutableComment : Comment, MutableContent {
 }
 
 fun mutableCommentOf(comment: String): Comment = CommentContent(comment)
+fun String.toMutableComment() = mutableCommentOf(this)
 
 
 open class CommentContent(

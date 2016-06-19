@@ -9,6 +9,8 @@ interface CData : Text {
 }
 
 fun cdataOf(text: String) = CData.of(text)
+fun String.toCData() = cdataOf(this)
+
 
 interface MutableCData : CData, MutableText {
     override fun immutable(): CData
@@ -19,6 +21,8 @@ interface MutableCData : CData, MutableText {
 }
 
 fun mutableCDataOf(text: String) = MutableCData.of(text)
+fun String.toMutableCData() = mutableCDataOf(this)
+
 
 
 open class CDataContent(text: String) : CData, TextContent(text) {

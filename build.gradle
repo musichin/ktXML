@@ -11,7 +11,7 @@ buildscript {
 
 allprojects {
     ext {
-        publish_version = '0.0.5'
+        publish_version = '0.1.0'
         publish_groupId = 'com.github.musichin.ktxml'
         publish_website = 'https://github.com/musichin/ktXML'
         publish_desc = 'XML Library for Kotlin'

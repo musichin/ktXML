@@ -20,6 +20,7 @@ interface Attribute {
 
 fun attributeOf(name: String, value: String) = Attribute.of(name, value)
 fun attributeOf(namespace: String? = null, name: String, value: String) = Attribute.of(namespace, name, value)
+fun Pair<String, String>.toAttribute() = attributeOf(first, second)
 
 interface MutableAttribute : Attribute {
     override var namespace: String?
@@ -38,6 +39,7 @@ interface MutableAttribute : Attribute {
 
 fun mutableAttributeOf(name: String, value: String) = MutableAttribute.of(name, value)
 fun mutableAttributeOf(namespace: String? = null, name: String, value: String) = MutableAttribute.of(namespace, name, value)
+fun Pair<String, String>.toMtableAttribute() = mutableAttributeOf(first, second)
 
 
 open class AttributeContent(
