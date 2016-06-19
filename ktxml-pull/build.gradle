@@ -22,6 +22,14 @@ dependencies {
     testCompile 'net.sf.kxml:kxml2:2.3.0'
 }
 
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
 publish {
     artifactId = project.name
     uploadName = parent.ext.publish_name
