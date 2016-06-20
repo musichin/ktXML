@@ -5,6 +5,12 @@ interface Attribute {
     val name: String
     val value: String
 
+    val shortValue: Short
+    val intValue: Int
+    val longValue: Long
+    val floatValue: Float
+    val doubleValue: Double
+
     fun mutable(): MutableAttribute
 
     operator fun component1(): String?
@@ -27,6 +33,12 @@ interface MutableAttribute : Attribute {
     override var name: String
     override var value: String
 
+    override var shortValue: Short
+    override var intValue: Int
+    override var longValue: Long
+    override var floatValue: Float
+    override var doubleValue: Double
+
     fun immutable(): Attribute
 
     companion object {
@@ -39,19 +51,55 @@ interface MutableAttribute : Attribute {
 
 fun mutableAttributeOf(name: String, value: String) = MutableAttribute.of(name, value)
 fun mutableAttributeOf(namespace: String? = null, name: String, value: String) = MutableAttribute.of(namespace, name, value)
-fun Pair<String, String>.toMtableAttribute() = mutableAttributeOf(first, second)
+fun Pair<String, String>.toMutableAttribute() = mutableAttributeOf(first, second)
 
 
 open class AttributeContent(
-        override val namespace: String?,
+        override val namespace: String? = null,
         override val name: String,
         override val value: String
 ) : Attribute {
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Short
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Int
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Long
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Float
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Double
+    ) : this(namespace, name, value.toString())
+
     override fun mutable(): MutableAttribute = MutableAttributeContent(namespace, name, value)
 
     override operator fun component1() = namespace
     override operator fun component2() = name
     override operator fun component3() = value
+
+    override val shortValue: Short get() = value.toShort()
+    override val intValue: Int get() = value.toInt()
+    override val longValue: Long get() = value.toLong()
+    override val floatValue: Float get() = value.toFloat()
+    override val doubleValue: Double get() = value.toDouble()
 
     override fun hashCode(): Int {
         var result = name.hashCode();
@@ -76,7 +124,67 @@ open class MutableAttributeContent(
         override var name: String,
         override var value: String
 ) : AttributeContent(namespace, name, value), MutableAttribute {
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Short
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Int
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Long
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Float
+    ) : this(namespace, name, value.toString())
+
+    constructor(
+            namespace: String? = null,
+            name: String,
+            value: Double
+    ) : this(namespace, name, value.toString())
+
     override fun immutable(): Attribute = AttributeContent(namespace, name, value)
+
+    override var shortValue: Short
+        get() = super.shortValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var intValue: Int
+        get() = super.intValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var longValue: Long
+        get() = super.longValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var floatValue: Float
+        get() = super.floatValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var doubleValue: Double
+        get() = super.doubleValue
+        set(value) {
+            this.value = value.toString()
+        }
 
     override fun mutable() = this
 }
