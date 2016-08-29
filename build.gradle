@@ -18,7 +18,7 @@ allprojects {
         publish_name = 'ktXML'
         publish_licences = ['Apache-2.0']
 
-        kotlin_version = '1.0.2'
+        kotlin_version = '1.0.3'
     }
 
     repositories {
