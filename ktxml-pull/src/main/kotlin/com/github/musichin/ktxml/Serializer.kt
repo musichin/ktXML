@@ -23,8 +23,8 @@ fun Element.serialize(output: OutputStream) {
 
 private fun OutputStream.createSerializer(parserFactory: XmlPullParserFactory? = null): XmlSerializer {
     val factory = parserFactory ?: XmlPullParserFactory.newInstance()
-    val serializer = factory.newSerializer();
-    serializer.setOutput(this, null);
+    val serializer = factory.newSerializer()
+    serializer.setOutput(this, null)
     return serializer
 }
 

@@ -5,6 +5,9 @@ interface Attribute {
     val name: String
     val value: String
 
+    val booleanValue: Boolean
+    val byteValue: Byte
+    val charValue: Char
     val shortValue: Short
     val intValue: Int
     val longValue: Long
@@ -33,6 +36,9 @@ interface MutableAttribute : Attribute {
     override var name: String
     override var value: String
 
+    override var booleanValue: Boolean
+    override var byteValue: Byte
+    override var charValue: Char
     override var shortValue: Short
     override var intValue: Int
     override var longValue: Long
@@ -62,31 +68,19 @@ open class AttributeContent(
     constructor(
             namespace: String? = null,
             name: String,
-            value: Short
+            value: Number
     ) : this(namespace, name, value.toString())
 
     constructor(
             namespace: String? = null,
             name: String,
-            value: Int
+            value: Boolean
     ) : this(namespace, name, value.toString())
 
     constructor(
             namespace: String? = null,
             name: String,
-            value: Long
-    ) : this(namespace, name, value.toString())
-
-    constructor(
-            namespace: String? = null,
-            name: String,
-            value: Float
-    ) : this(namespace, name, value.toString())
-
-    constructor(
-            namespace: String? = null,
-            name: String,
-            value: Double
+            value: Char
     ) : this(namespace, name, value.toString())
 
     override fun mutable(): MutableAttribute = MutableAttributeContent(namespace, name, value)
@@ -95,6 +89,9 @@ open class AttributeContent(
     override operator fun component2() = name
     override operator fun component3() = value
 
+    override val booleanValue: Boolean get() = value.toBoolean()
+    override val byteValue: Byte get() = value.toByte()
+    override val charValue: Char get() = value[0]
     override val shortValue: Short get() = value.toShort()
     override val intValue: Int get() = value.toInt()
     override val longValue: Long get() = value.toLong()
@@ -102,9 +99,9 @@ open class AttributeContent(
     override val doubleValue: Double get() = value.toDouble()
 
     override fun hashCode(): Int {
-        var result = name.hashCode();
+        var result = name.hashCode()
         result = 31 * result + value.hashCode()
-        return result;
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -127,34 +124,40 @@ open class MutableAttributeContent(
     constructor(
             namespace: String? = null,
             name: String,
-            value: Short
+            value: Number
     ) : this(namespace, name, value.toString())
 
     constructor(
             namespace: String? = null,
             name: String,
-            value: Int
+            value: Boolean
     ) : this(namespace, name, value.toString())
 
     constructor(
             namespace: String? = null,
             name: String,
-            value: Long
-    ) : this(namespace, name, value.toString())
-
-    constructor(
-            namespace: String? = null,
-            name: String,
-            value: Float
-    ) : this(namespace, name, value.toString())
-
-    constructor(
-            namespace: String? = null,
-            name: String,
-            value: Double
+            value: Char
     ) : this(namespace, name, value.toString())
 
     override fun immutable(): Attribute = AttributeContent(namespace, name, value)
+
+    override var booleanValue: Boolean
+        get() = super.booleanValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var byteValue: Byte
+        get() = super.byteValue
+        set(value) {
+            this.value = value.toString()
+        }
+
+    override var charValue: Char
+        get() = super.charValue
+        set(value) {
+            this.value = value.toString()
+        }
 
     override var shortValue: Short
         get() = super.shortValue

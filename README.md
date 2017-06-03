@@ -1,4 +1,4 @@
-# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.0.3-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML) [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg)](https://bintray.com/musichin/maven/ktXML/_latestVersion)
+# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.1.2-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML) [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg)](https://bintray.com/musichin/maven/ktXML/_latestVersion)
 Simple XML processing library with immutable data objects.
 
 ## Create XML Object
@@ -11,13 +11,15 @@ val element = elementOf("Book") {
 }
 ```
 
-## Serialize
+## Serialization
+
+### Serialize
 ```kotlin
 val element = elementOf("book")
 println(element.serialize())
 ```
 
-## Deserialize
+### Deserialize
 ```kotlin
 val element = "<book/>".deserialize()
 ```

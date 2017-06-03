@@ -24,7 +24,7 @@ interface MutableComment : Comment, MutableContent {
     }
 }
 
-fun mutableCommentOf(comment: String): Comment = CommentContent(comment)
+fun mutableCommentOf(comment: String): MutableComment = MutableCommentContent(comment)
 fun String.toMutableComment() = mutableCommentOf(this)
 
 

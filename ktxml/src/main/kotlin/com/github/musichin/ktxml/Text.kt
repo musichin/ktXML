@@ -1,7 +1,7 @@
 package com.github.musichin.ktxml
 
 interface Text : Content {
-    val text: String;
+    val text: String
 
     override fun mutable(): MutableText
 
@@ -14,7 +14,7 @@ fun textOf(text: String) = Text.of(text)
 fun String.toText() = textOf(this)
 
 interface MutableText : Text, MutableContent {
-    override var text: String;
+    override var text: String
 
     override fun immutable(): Text
 

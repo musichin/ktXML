@@ -1,5 +1,7 @@
 package com.github.musichin.ktxml
 
+import java.util.*
+
 interface Element : Content, Iterable<Content> {
     val namespace: String?
     val name: String
@@ -17,6 +19,8 @@ interface Element : Content, Iterable<Content> {
      * Returns content at specified position
      */
     operator fun get(i: Int): Content
+
+    operator fun get(name: String): Element
 
     /**
      * Returns string of first text content in contents
@@ -194,12 +198,14 @@ open class ElementContent(
 
     override operator fun get(i: Int) = contents[i]
 
+    override fun get(name: String): Element = element(name) ?: throw NoSuchElementException()
+
     override fun hashCode(): Int {
         var result = (namespace?.hashCode() ?: 0)
         result = 31 * result + name.hashCode()
         result = 31 * result + contents.hashCode()
         result = 31 * result + attributes.hashCode()
-        return result;
+        return result
     }
 
     override fun equals(other: Any?): Boolean {
@@ -234,6 +240,8 @@ open class MutableElementContent constructor(
     override fun iterator() = contents.iterator()
 
     override fun get(i: Int) = contents[i]
+
+    override fun get(name: String): MutableElement = element(name) ?: throw NoSuchElementException()
 
     override fun elements(namespace: String?, name: String?): List<MutableElement> = contents.elements(namespace, name)
 
@@ -366,8 +374,6 @@ open class MarkupBuilder(
 
     operator fun String.unaryPlus() = text(this)
     operator fun Pair<String, String>.unaryPlus() = attribute(first, second)
-
-
 }
 
 
