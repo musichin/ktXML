@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     testImplementation(kotlin("test"))
-    testImplementation("org.mockito:mockito-core:1.10.19")
+    testImplementation("org.mockito:mockito-core:3.12.4")
     testImplementation("org.easytesting:fest-assert-core:2.0M10")
 }
 
