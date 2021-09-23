@@ -1,7 +1,7 @@
 # ktXML
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.5.31-blue.svg)](http://kotlinlang.org)
 [![CI](https://github.com/musichin/ktXML/actions/workflows/ci.yml/badge.svg)](https://github.com/musichin/ktXML/actions/workflows/ci.yml)
-[![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML)
+[![codecov](https://codecov.io/gh/musichin/ktXML/branch/main/graph/badge.svg?token=97KCGzK38R)](https://codecov.io/gh/musichin/ktXML)
 
 Simple XML processing library with immutable data objects.
 
