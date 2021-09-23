@@ -50,8 +50,8 @@ interface MutableAttribute : Attribute {
     companion object {
         fun of(name: String, value: String): MutableAttribute = MutableAttributeContent(null, name, value)
 
-        fun of(namespace: String? = null, name: String, value: String): MutableAttribute
-                = MutableAttributeContent(namespace, name, value)
+        fun of(namespace: String? = null, name: String, value: String): MutableAttribute =
+            MutableAttributeContent(namespace, name, value)
     }
 }
 
@@ -59,28 +59,27 @@ fun mutableAttributeOf(name: String, value: String) = MutableAttribute.of(name, 
 fun mutableAttributeOf(namespace: String? = null, name: String, value: String) = MutableAttribute.of(namespace, name, value)
 fun Pair<String, String>.toMutableAttribute() = mutableAttributeOf(first, second)
 
-
 open class AttributeContent(
-        override val namespace: String? = null,
-        override val name: String,
-        override val value: String
+    override val namespace: String? = null,
+    override val name: String,
+    override val value: String
 ) : Attribute {
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Number
+        namespace: String? = null,
+        name: String,
+        value: Number
     ) : this(namespace, name, value.toString())
 
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Boolean
+        namespace: String? = null,
+        name: String,
+        value: Boolean
     ) : this(namespace, name, value.toString())
 
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Char
+        namespace: String? = null,
+        name: String,
+        value: Char
     ) : this(namespace, name, value.toString())
 
     override fun mutable(): MutableAttribute = MutableAttributeContent(namespace, name, value)
@@ -117,26 +116,26 @@ open class AttributeContent(
 }
 
 open class MutableAttributeContent(
-        override var namespace: String? = null,
-        override var name: String,
-        override var value: String
+    override var namespace: String? = null,
+    override var name: String,
+    override var value: String
 ) : AttributeContent(namespace, name, value), MutableAttribute {
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Number
+        namespace: String? = null,
+        name: String,
+        value: Number
     ) : this(namespace, name, value.toString())
 
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Boolean
+        namespace: String? = null,
+        name: String,
+        value: Boolean
     ) : this(namespace, name, value.toString())
 
     constructor(
-            namespace: String? = null,
-            name: String,
-            value: Char
+        namespace: String? = null,
+        name: String,
+        value: Char
     ) : this(namespace, name, value.toString())
 
     override fun immutable(): Attribute = AttributeContent(namespace, name, value)

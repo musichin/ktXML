@@ -151,7 +151,7 @@ class MarkupBuilderElementTest {
 
     @Test fun testUnaryPlusPairOperator() {
         val element = elementOf("root") {
-            +("myKey"  to "myValue")
+            +("myKey" to "myValue")
         }
 
         assertThat(element.attribute("myKey")).isEqualTo("myValue")

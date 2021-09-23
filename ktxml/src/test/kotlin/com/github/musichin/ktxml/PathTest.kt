@@ -27,7 +27,6 @@ class PathTest {
         assertThat(element / "books" / XNamespace).isEqualTo("author-namespace")
         assertThat(element / XPaths("books") / XNamespace).containsExactly("author-namespace")
 
-
         assertThat(empty / XNamespace).isNull()
         assertThat(element / "noItem" / XNamespace).isNull()
     }

@@ -57,7 +57,6 @@ class ElementListWrapper(value: List<Element> = listOf()) : AbstractContentListW
     override operator fun div(x: XPaths) = ElementListWrapper(value.mapNotNull { it.elements(x).value }.accumulate())
 
     override operator fun div(x: XPath) = ElementListWrapper(value.mapNotNull { it.element(x).value })
-
 }
 
 class MutableElementListWrapper(value: List<MutableElement> = listOf()) : AbstractContentListWrapper<MutableElement>(value) {
@@ -87,7 +86,6 @@ operator fun <T : Element> T.div(name: String) = div(XPath(null, name))
 operator fun <T : MutableElement> T.div(name: String) = div(XPath(null, name))
 operator fun <T : Element> T.div(x: XAttribute) = attribute(x)
 
-
 operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XElement) = this
 operator fun <T : MutableElement> T.div(@Suppress("UNUSED_PARAMETER") x: XElement) = this
 operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XText) = text()
@@ -98,7 +96,7 @@ operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XNamespace) = 
 
 private fun Element.element(x: XPath) = ElementWrapper(if (x.index != null) elements(x.namespace, x.name).getOrNull(x.index) else element(x.namespace, x.name))
 private fun MutableElement.element(x: XPath) = MutableElementWrapper(if (x.index != null) elements(x.namespace, x.name).getOrNull(x.index) else element(x.namespace, x.name))
-private fun <T : Element> List<T>.getOrNull(index: Int): T? = getOrElse(index, { null })
+private fun <T : Element> List<T>.getOrNull(index: Int): T? = getOrNull(index)
 private fun <T : Element> T.elements(x: XPaths) = ElementListWrapper(elements(x.namespace, x.name))
 private fun <T : MutableElement> T.elements(x: XPaths) = MutableElementListWrapper(elements(x.namespace, x.name))
 

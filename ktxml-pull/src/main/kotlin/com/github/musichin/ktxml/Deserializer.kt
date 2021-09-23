@@ -39,13 +39,12 @@ private fun deserializeElement(parser: XmlPullParser): MutableElement {
 
     val element = mutableElementOf(parser.namespace, parser.name)
 
-    for (index in 0..parser.attributeCount - 1) {
+    for (index in 0 until parser.attributeCount) {
         val namespace: String = parser.getAttributeNamespace(index)
         val name = parser.getAttributeName(index)
         val value = parser.getAttributeValue(index)
         element.addAttribute(if (namespace == "") null else namespace, name, value)
     }
-
 
     parser.next
     while (!parser.isEndTagOrEndDocument()) {

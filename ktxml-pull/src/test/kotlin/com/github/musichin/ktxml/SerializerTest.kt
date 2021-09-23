@@ -47,12 +47,12 @@ class SerializerTest {
     @Test fun testComplexXml() {
         val serialized = elementOf("booksNs", "book") {
             element("books")
-                for(i in 0..9) {
-                    element("book") {
-                        attribute("index", i.toString())
-                        text("title $i")
-                    }
+            for (i in 0..9) {
+                element("book") {
+                    attribute("index", i.toString())
+                    text("title $i")
                 }
+            }
         }
 
         val str = serialized.serialize()

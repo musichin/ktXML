@@ -29,12 +29,12 @@ fun mutableTextOf(text: String) = MutableText.of(text)
 fun String.toMutableText() = mutableTextOf(this)
 
 open class TextContent(
-        override val text: String
+    override val text: String
 ) : Text {
     override fun mutable(): MutableText = MutableTextContent(text)
 
     override fun hashCode(): Int {
-        return text.hashCode();
+        return text.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -49,9 +49,8 @@ open class TextContent(
     }
 }
 
-
 open class MutableTextContent(
-        override var text: String
+    override var text: String
 ) : TextContent(text), MutableText {
     override fun append(text: String) {
         this.text += text

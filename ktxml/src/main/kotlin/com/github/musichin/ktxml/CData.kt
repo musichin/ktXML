@@ -11,7 +11,6 @@ interface CData : Text {
 fun cdataOf(text: String) = CData.of(text)
 fun String.toCData() = cdataOf(this)
 
-
 interface MutableCData : CData, MutableText {
     override fun immutable(): CData
 
@@ -23,13 +22,11 @@ interface MutableCData : CData, MutableText {
 fun mutableCDataOf(text: String) = MutableCData.of(text)
 fun String.toMutableCData() = mutableCDataOf(this)
 
-
-
 open class CDataContent(text: String) : CData, TextContent(text) {
     override fun mutable(): MutableCData = MutableCDataContent(text)
 
     override fun hashCode(): Int {
-        return text.hashCode();
+        return text.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
@@ -41,7 +38,7 @@ open class CDataContent(text: String) : CData, TextContent(text) {
 }
 
 open class MutableCDataContent(
-        override var text: String
+    override var text: String
 ) : CDataContent(text), MutableCData {
     override fun append(text: String) {
         this.text += text
