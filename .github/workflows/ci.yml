@@ -18,9 +18,13 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
+      - uses: musichin/ktlint-check@v1
+        with:
+          version: '0.42.1'
+
       - name: Build with Gradle
         run: ./gradlew build
 
-#      - run: bash <(curl -s https://codecov.io/bash)
-#        env:
-#          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+      - run: bash <(curl -s https://codecov.io/bash)
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

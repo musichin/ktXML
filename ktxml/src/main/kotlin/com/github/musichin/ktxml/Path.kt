@@ -96,7 +96,6 @@ operator fun <T : Element> T.div(@Suppress("UNUSED_PARAMETER") x: XNamespace) = 
 
 private fun Element.element(x: XPath) = ElementWrapper(if (x.index != null) elements(x.namespace, x.name).getOrNull(x.index) else element(x.namespace, x.name))
 private fun MutableElement.element(x: XPath) = MutableElementWrapper(if (x.index != null) elements(x.namespace, x.name).getOrNull(x.index) else element(x.namespace, x.name))
-private fun <T : Element> List<T>.getOrNull(index: Int): T? = getOrNull(index)
 private fun <T : Element> T.elements(x: XPaths) = ElementListWrapper(elements(x.namespace, x.name))
 private fun <T : MutableElement> T.elements(x: XPaths) = MutableElementListWrapper(elements(x.namespace, x.name))
 
