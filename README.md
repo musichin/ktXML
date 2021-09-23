@@ -1,4 +1,8 @@
-# ktXML [![Kotlin](https://img.shields.io/badge/Kotlin-1.1.2-blue.svg)](http://kotlinlang.org) [![Build Status](https://travis-ci.org/musichin/ktXML.svg?branch=master)](https://travis-ci.org/musichin/ktXML) [![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML) [![jcenter](https://api.bintray.com/packages/musichin/maven/ktXML/images/download.svg)](https://bintray.com/musichin/maven/ktXML/_latestVersion)
+# ktXML
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.5.31-blue.svg)](http://kotlinlang.org)
+[![CI](https://github.com/musichin/ktXML/actions/workflows/ci.yml/badge.svg)](https://github.com/musichin/ktXML/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/musichin/ktXML/branch/master/graph/badge.svg)](https://codecov.io/gh/musichin/ktXML)
+
 Simple XML processing library with immutable data objects.
 
 ## Create XML Object
@@ -27,14 +31,14 @@ val element = "<book/>".deserialize()
 ## Binaries
 ```groovy
 repositories {
-    maven { url 'https://bintray.com/musichin/maven' }
+    mavenCentral()
 }
 
 dependencies {
-    compile 'com.github.musichin.ktxml:ktxml:x.y.z'
+    compile 'de.musichin.ktxml:ktxml:x.y.z'
     
     // for serialization/deserialization with pull parser
-    compile 'com.github.musichin.ktxml:ktxml-pull:x.y.z'
+    compile 'de.musichin.ktxml:ktxml-pull:x.y.z'
 }
 ```
 
