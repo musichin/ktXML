@@ -10,7 +10,7 @@ buildscript {
     }
     dependencies {
         classpath(kotlin("gradle-plugin", version = "1.5.31"))
-        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.24.0")
     }
 }
 
