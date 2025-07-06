@@ -1,61 +1,26 @@
 package com.github.musichin.ktxml
 
-interface Text : Content {
-    val text: String
+open class Text internal constructor(
+    override val text: String,
+) : BaseText,
+    Node {
+    override fun toMutable(): MutableText = MutableText.of(text)
 
-    override fun mutable(): MutableText
+    override fun hashCode(): Int = text.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || other !is Text) return false
+        return text == other.text
+    }
+
+    override fun toString(): String = "Text(text=$text)"
 
     companion object {
-        fun of(text: String): Text = TextContent(text)
+        fun of(text: String): Text = Text(text)
     }
 }
 
 fun textOf(text: String) = Text.of(text)
-fun String.toText() = textOf(this)
 
-interface MutableText : Text, MutableContent {
-    override var text: String
-
-    override fun immutable(): Text
-
-    fun append(text: String)
-
-    companion object {
-        fun of(text: String): MutableText = MutableTextContent(text)
-    }
-}
-
-fun mutableTextOf(text: String) = MutableText.of(text)
-fun String.toMutableText() = mutableTextOf(this)
-
-open class TextContent(
-    override val text: String
-) : Text {
-    override fun mutable(): MutableText = MutableTextContent(text)
-
-    override fun hashCode(): Int {
-        return text.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other is Text) {
-            return text == other.text
-        }
-        return super.equals(other)
-    }
-
-    override fun toString(): String {
-        return "${javaClass.simpleName}(text=$text)"
-    }
-}
-
-open class MutableTextContent(
-    override var text: String
-) : TextContent(text), MutableText {
-    override fun append(text: String) {
-        this.text += text
-    }
-
-    override fun immutable(): Text = TextContent(text)
-    override fun mutable() = this
-}
+fun String.toText() = Text.of(this)
