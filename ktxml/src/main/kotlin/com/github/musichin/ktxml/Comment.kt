@@ -1,56 +1,26 @@
 package com.github.musichin.ktxml
 
-interface Comment : Content {
-    val comment: String
-
-    override fun mutable(): MutableComment
-
-    companion object {
-        fun of(comment: String): Comment = CommentContent(comment)
-    }
-}
-
-fun commentOf(comment: String): Comment = CommentContent(comment)
-fun String.toComment() = commentOf(this)
-
-interface MutableComment : Comment, MutableContent {
-    override var comment: String
-
-    override fun immutable(): Comment
-
-    companion object {
-        fun of(comment: String): MutableComment = MutableCommentContent(comment)
-    }
-}
-
-fun mutableCommentOf(comment: String): MutableComment = MutableCommentContent(comment)
-fun String.toMutableComment() = mutableCommentOf(this)
-
-open class CommentContent(
-    override val comment: String
-) : Comment {
-    override fun mutable(): MutableComment = MutableCommentContent(comment)
-
-    override fun hashCode(): Int {
-        return comment.hashCode()
-    }
+open class Comment internal constructor(
+    override val comment: String,
+) : BaseComment,
+    Node {
+    override fun hashCode(): Int = comment.hashCode()
 
     override fun equals(other: Any?): Boolean {
-        if (other is CommentContent) {
-            return comment == other.comment
-        }
-        return super.equals(other)
+        if (this === other) return true
+        if (other == null || other !is Comment) return false
+        return comment == other.comment
     }
 
-    override fun toString(): String {
-        return "${javaClass.simpleName}(comment=$comment)"
+    override fun toString(): String = "Comment(comment=$comment)"
+
+    override fun toMutable(): MutableComment = MutableComment.of(comment)
+
+    companion object {
+        fun of(comment: String): Comment = Comment(comment)
     }
 }
 
-open class MutableCommentContent(
-    override var comment: String
-) : CommentContent(comment), MutableComment {
-    override fun immutable() = CommentContent(comment)
+fun commentOf(comment: String): Comment = Comment.of(comment)
 
-    override fun mutable() = this
-}
+fun String.toComment() = Comment.of(this)

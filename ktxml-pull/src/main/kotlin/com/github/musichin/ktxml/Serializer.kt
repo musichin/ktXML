@@ -4,62 +4,95 @@ import org.xmlpull.v1.XmlPullParserFactory
 import org.xmlpull.v1.XmlSerializer
 import java.io.ByteArrayOutputStream
 import java.io.OutputStream
+import java.io.Writer
 
-fun Element.serialize(): String {
+fun BaseElement.serialize(
+    namespaces: List<Pair<String, String>> = emptyList(),
+    encoding: String? = null,
+    standalone: Boolean? = null,
+): String {
     val output = ByteArrayOutputStream()
-    serialize(output)
-    return output.toString()
+    serialize(output, namespaces, encoding ?: "UTF-8", standalone)
+    return output.toString(encoding ?: "UTF-8")
 }
 
-fun Element.serialize(output: OutputStream) {
-    val serializer = output.createSerializer()
+fun BaseElement.serialize(
+    output: OutputStream,
+    namespaces: List<Pair<String, String>> = emptyList(),
+    encoding: String? = null,
+    standalone: Boolean? = null,
+) {
+    val factory = XmlPullParserFactory.newInstance()
+    val serializer = factory.newSerializer()
+    serializer.setOutput(output, null)
 
-    serializer.startDocument(null, null)
-    serialize(serializer)
+    serialize(serializer, namespaces, encoding, standalone)
     serializer.endDocument()
 
     output.close()
 }
 
-private fun OutputStream.createSerializer(parserFactory: XmlPullParserFactory? = null): XmlSerializer {
-    val factory = parserFactory ?: XmlPullParserFactory.newInstance()
+fun BaseElement.serialize(
+    output: Writer,
+    namespaces: List<Pair<String, String>> = emptyList(),
+    encoding: String? = null,
+    standalone: Boolean? = null,
+) {
+    val factory = XmlPullParserFactory.newInstance()
     val serializer = factory.newSerializer()
-    serializer.setOutput(this, null)
-    return serializer
+    serializer.setOutput(output)
+
+    serialize(serializer, namespaces, encoding, standalone)
+    serializer.endDocument()
+
+    output.close()
 }
 
-private fun Element.serialize(serializer: XmlSerializer) {
-    serializer.startTag(namespace, name)
+fun BaseElement.serialize(
+    serializer: XmlSerializer,
+    namespaces: List<Pair<String, String>> = emptyList(),
+    encoding: String? = null,
+    standalone: Boolean? = null,
+) {
+    serializer.startDocument(encoding, standalone)
 
-    for ((namespace, key, value) in attributes) {
-        serializer.attribute(namespace, key, value)
+    for ((prefix, namespace) in namespaces) {
+        serializer.setPrefix(prefix, namespace)
     }
+    serialize(serializer, this)
 
-    for (element in contents) {
-        element.serialize(serializer)
-    }
-
-    serializer.endTag(namespace, name)
+    serializer.endDocument()
 }
 
-private fun Text.serialize(serializer: XmlSerializer) {
-    serializer.text(text)
-}
+private fun serialize(
+    serializer: XmlSerializer,
+    node: BaseNode,
+) {
+    when (node) {
+        is BaseCData -> {
+            serializer.cdsect(node.text)
+        }
+        is BaseText -> {
+            serializer.text(node.text)
+        }
+        is BaseComment -> {
+            serializer.comment(node.comment)
+        }
+        is BaseAttribute -> {
+            serializer.attribute(node.namespace, node.name, node.value)
+        }
+        is BaseElement -> {
+            serializer.startTag(node.namespace, node.name)
 
-private fun CData.serialize(serializer: XmlSerializer) {
-    serializer.cdsect(text)
-}
+            for (node in node.nodes) {
+                if (node is BaseAttribute) serialize(serializer, node)
+            }
 
-private fun Comment.serialize(serializer: XmlSerializer) {
-    serializer.comment(comment)
-}
+            for (node in node.nodes) {
+                if (node !is BaseAttribute) serialize(serializer, node)
+            }
 
-private fun Content.serialize(serializer: XmlSerializer) {
-    when (this) {
-        is Element -> serialize(serializer)
-        is CData -> serialize(serializer)
-        is Text -> serialize(serializer)
-        is Comment -> serialize(serializer)
-        else -> throw UnsupportedOperationException("${javaClass.name} is unsupported")
+            serializer.endTag(node.namespace, node.name)
+        }
     }
 }

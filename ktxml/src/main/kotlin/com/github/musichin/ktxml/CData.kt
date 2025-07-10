@@ -1,50 +1,27 @@
 package com.github.musichin.ktxml
 
-interface CData : Text {
-    override fun mutable(): MutableCData
+open class CData internal constructor(
+    text: String,
+) : Text(text),
+    BaseCData,
+    Node {
+    override fun toMutable(): MutableCData = MutableCData.of(text)
+
+    override fun hashCode(): Int = text.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || other !is CData) return false
+        return text == other.text
+    }
+
+    override fun toString(): String = "CData(text=$text)"
 
     companion object {
-        fun of(text: String): CData = CDataContent(text)
+        fun of(text: String): CData = CData(text)
     }
 }
 
 fun cdataOf(text: String) = CData.of(text)
-fun String.toCData() = cdataOf(this)
 
-interface MutableCData : CData, MutableText {
-    override fun immutable(): CData
-
-    companion object {
-        fun of(text: String): MutableCData = MutableCDataContent(text)
-    }
-}
-
-fun mutableCDataOf(text: String) = MutableCData.of(text)
-fun String.toMutableCData() = mutableCDataOf(this)
-
-open class CDataContent(text: String) : CData, TextContent(text) {
-    override fun mutable(): MutableCData = MutableCDataContent(text)
-
-    override fun hashCode(): Int {
-        return text.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other is CData) {
-            return text == other.text
-        }
-        return super.equals(other)
-    }
-}
-
-open class MutableCDataContent(
-    override var text: String
-) : CDataContent(text), MutableCData {
-    override fun append(text: String) {
-        this.text += text
-    }
-
-    override fun immutable(): CData = CDataContent(text)
-
-    override fun mutable() = this
-}
+fun String.toCData() = CData.of(this)

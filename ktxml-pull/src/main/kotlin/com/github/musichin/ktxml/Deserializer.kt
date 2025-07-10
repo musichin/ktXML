@@ -3,36 +3,43 @@ package com.github.musichin.ktxml
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
 import java.io.InputStream
+import java.io.Reader
+import java.nio.charset.Charset
 
-fun String.deserialize(parserFactory: XmlPullParserFactory? = null) = byteInputStream().deserialize(parserFactory)
+fun String.deserialize(encoding: String? = null): Element =
+    byteInputStream(Charset.forName(encoding ?: "UTF-8")).use {
+        it.deserialize(encoding ?: "UTF-8")
+    }
 
-fun InputStream.deserialize(parserFactory: XmlPullParserFactory? = null): Element {
-    val parser = xmlPullParser(parserFactory)
-
-    parser.require(XmlPullParser.START_DOCUMENT, null, null)
-    parser.next
-
-    val element = deserializeElement(parser)
-
-    parser.require(XmlPullParser.END_DOCUMENT, null, null)
-
-    close()
-
-    return element.mutable()
-}
-
-private fun InputStream.xmlPullParser(parserFactory: XmlPullParserFactory? = null): XmlPullParser {
-    val factory = parserFactory ?: XmlPullParserFactory.newInstance()
-    factory.isNamespaceAware = true
-    val parser = factory.newPullParser()
+fun InputStream.deserialize(encoding: String? = null): Element {
+    val parser = XmlPullParserFactory.newInstance().newPullParser()
     parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true)
-    parser.setInput(this, null)
-    return parser
+    parser.setInput(this, encoding)
+    return parser.deserialize()
 }
 
-private fun deserializeText(parser: XmlPullParser): MutableText {
-    return mutableTextOf(parser.readText())
+fun Reader.deserialize(): Element {
+    val parser = XmlPullParserFactory.newInstance().newPullParser()
+    parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true)
+    parser.setInput(this)
+    return parser.deserialize()
 }
+
+fun XmlPullParser.deserialize(): Element {
+    require(XmlPullParser.START_DOCUMENT, null, null)
+    nextSkipWhitespace()
+    val element = deserializeElement(this)
+    require(XmlPullParser.END_DOCUMENT, null, null)
+    nextSkipWhitespace()
+
+    return element.toImmutable()
+}
+
+private fun deserializeText(parser: XmlPullParser): MutableText = mutableTextOf(parser.readText())
+
+private fun deserializeCData(parser: XmlPullParser): MutableCData = mutableCDataOf(parser.readText())
+
+private fun deserializeComment(parser: XmlPullParser): MutableComment = mutableCommentOf(parser.readText())
 
 private fun deserializeElement(parser: XmlPullParser): MutableElement {
     parser.require(XmlPullParser.START_TAG, null, null)
@@ -43,20 +50,22 @@ private fun deserializeElement(parser: XmlPullParser): MutableElement {
         val namespace: String = parser.getAttributeNamespace(index)
         val name = parser.getAttributeName(index)
         val value = parser.getAttributeValue(index)
-        element.addAttribute(if (namespace == "") null else namespace, name, value)
+        element.addAttribute(namespace, name, value)
     }
 
-    parser.next
+    parser.nextSkipWhitespace()
     while (!parser.isEndTagOrEndDocument()) {
         when (parser.eventType) {
-            XmlPullParser.START_TAG -> element.addContent(deserializeElement(parser))
-            XmlPullParser.TEXT -> element.addContent(deserializeText(parser))
-            else -> parser.skip()
+            XmlPullParser.START_TAG -> element.addNode(deserializeElement(parser))
+            XmlPullParser.TEXT -> element.addNode(deserializeText(parser))
+            XmlPullParser.CDSECT -> element.addNode(deserializeCData(parser))
+            XmlPullParser.COMMENT -> element.addNode(deserializeComment(parser))
+            else -> throw IllegalArgumentException("Unsupported event type: ${parser.eventType}")
         }
     }
 
     parser.require(XmlPullParser.END_TAG, null, null)
-    parser.next
+    parser.nextSkipWhitespace()
 
     return element
 }
@@ -69,34 +78,14 @@ private fun XmlPullParser.readText(): String {
     var value = ""
     do {
         value += text
-    } while (next == XmlPullParser.TEXT)
+    } while (nextSkipWhitespace() == XmlPullParser.TEXT)
 
     return value
 }
 
-private val XmlPullParser.next: Int get() {
-    next()
-
-    return if (eventType == XmlPullParser.TEXT && isWhitespace) {
-        next
-    } else {
-        eventType
-    }
-}
-
-private fun XmlPullParser.skip() {
-    if (eventType == XmlPullParser.END_TAG) {
-        return
-    }
-
-    require(XmlPullParser.START_TAG, null, null)
-
-    var depth = 1
-    while (depth > 0) {
-        depth += when (next) {
-            XmlPullParser.END_TAG -> -1
-            XmlPullParser.START_TAG -> +1
-            else -> 0
-        }
-    }
+private fun XmlPullParser.nextSkipWhitespace(): Int {
+    do {
+        next()
+    } while (eventType == XmlPullParser.TEXT && isWhitespace)
+    return eventType
 }
