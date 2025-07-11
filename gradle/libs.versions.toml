@@ -1,9 +1,13 @@
 [versions]
 kotlin = "2.2.0"
+kover = "0.9.1"
 assertj = "3.24.2"
+mavenPublish = "0.33.0"
 
 [libraries]
 assertjs-core = { group = "org.assertj", name = "assertj-core", version.ref = "assertj" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

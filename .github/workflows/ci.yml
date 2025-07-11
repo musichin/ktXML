@@ -26,8 +26,10 @@ jobs:
           ktlint-version: '1.6.0'
 
       - name: Build with Gradle
-        run: ./gradlew build --no-daemon
+        run: ./gradlew clean build koverXmlReport --no-daemon
 
-      - run: bash <(curl -s https://codecov.io/bash)
+      - uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: true
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
