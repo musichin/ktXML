@@ -1,22 +1,19 @@
 plugins {
+    base
     alias(libs.plugins.kotlin.jvm) apply false
+    alias(libs.plugins.kover) apply false
+    alias(libs.plugins.maven.publish) apply false
 }
 
-subprojects {
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "jacoco")
-    configure<JacocoPluginExtension> {
-        toolVersion = "0.8.13"
-    }
-    tasks.withType<Test> {
-        finalizedBy(tasks.withType<JacocoReport>())
-    }
-    tasks.withType<JacocoReport> {
-        reports {
-            xml.required.set(true)
-            csv.required.set(false)
-            html.required.set(true)
-        }
-        dependsOn(tasks.withType<Test>())
-    }
+// kover {
+//    useJacoco()
+//    dependencies {
+//        kover(project(":ktxml"))
+//        kover(project(":ktxml-pull"))
+//    }
+// }
+
+tasks.named<Delete>("clean") {
+    delete(rootProject.layout.buildDirectory.get())
+    delete(subprojects.map { it.layout.buildDirectory.get() })
 }

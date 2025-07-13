@@ -2,6 +2,7 @@
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.2.0-blue.svg)](http://kotlinlang.org)
 [![CI](https://github.com/musichin/ktXML/actions/workflows/ci.yml/badge.svg)](https://github.com/musichin/ktXML/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/musichin/ktXML/branch/main/graph/badge.svg?token=97KCGzK38R)](https://codecov.io/gh/musichin/ktXML)
+[![Maven Central](https://img.shields.io/maven-central/v/de.musichin.ktxml/ktxml)](https://search.maven.org/artifact/de.musichin.ktxml/ktxml)
 
 Simple XML processing library with immutable data objects.
 
